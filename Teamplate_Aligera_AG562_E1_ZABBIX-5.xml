@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-10-20T17:16:52Z</date>
+    <groups>
+        <group>
+            <name>Templates-SBS</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>TEMPLATE_TELEFONIA_AG562_E1_ZABBIX-4.2-SB</template>
+            <name>TEMPLATE_TELEFONIA_AG562_E1_ZABBIX-4.2-SB</name>
+            <description>Template desenvolvido para Aligera AG562&#13;
+Current running firmware is: AG562 - 5.46&#13;
+&#13;
+Link: https://aligera.com.br/gateway-ag561/</description>
+            <groups>
+                <group>
+                    <name>Templates-SBS</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Channels</name>
+                </application>
+                <application>
+                    <name>Discovery Channel</name>
+                </application>
+                <application>
+                    <name>Discovery Interface</name>
+                </application>
+                <application>
+                    <name>Geral</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Name</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>ALIGERA-MIB::deviceName.0</snmp_oid>
+                    <key>deviceName</key>
+                    <delay>84600s</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <applications>
+                        <application>
+                            <name>Geral</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Uptime</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>ALIGERA-MIB::e1StatsTime.1</snmp_oid>
+                    <key>e1StatsTime</key>
+                    <delay>84600s</delay>
+                    <history>7d</history>
+                    <trends>90d</trends>
+                    <value_type>FLOAT</value_type>
+                    <units>uptime</units>
+                    <applications>
+                        <application>
+                            <name>Geral</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>0.01</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Perda de Pacote</name>
+                    <type>SIMPLE</type>
+                    <key>icmppingloss[,,,,]</key>
+                    <delay>120s</delay>
+                    <history>7d</history>
+                    <trends>90d</trends>
+                    <units>%</units>
+                    <applications>
+                        <application>
+                            <name>Discovery Interface</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{avg(#3)}&gt;35</expression>
+                            <name>{HOSTNAME} com perda de pacote</name>
+                            <priority>WARNING</priority>
+                            <description>Perda de Pacotes acima de 50%</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Latencia Ping</name>
+                    <type>SIMPLE</type>
+                    <key>icmppingsec</key>
+                    <delay>120s</delay>
+                    <history>7d</history>
+                    <trends>90d</trends>
+                    <value_type>FLOAT</value_type>
+                    <units>ms</units>
+                    <applications>
+                        <application>
+                            <name>Discovery Interface</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{avg(2m)}&gt;100</expression>
+                            <name>{HOSTNAME} esta com latência (&gt;100ms)</name>
+                            <priority>WARNING</priority>
+                            <description>Latência a cima de 100ms</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Ping</name>
+                    <type>SIMPLE</type>
+                    <key>icmpping[{HOST.IP},64,20,63,50]</key>
+                    <delay>120s</delay>
+                    <history>7d</history>
+                    <applications>
+                        <application>
+                            <name>Discovery Interface</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>E1-ALIGERA-STATUS-NETWROK</name>
+                    </valuemap>
+                    <triggers>
+                        <trigger>
+                            <expression>{sum(60)}=0</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{sum(60)}=1</recovery_expression>
+                            <name>{HOSTNAME} não responde (2m)</name>
+                            <priority>DISASTER</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Descoberta LLD Channel</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#CHANNAME},.1.3.6.1.4.1.41933.1.3.2.1.1,{#CHANSTATUS},.1.3.6.1.4.1.41933.1.3.2.1.3]</snmp_oid>
+                    <key>chan.discovery</key>
+                    <delay>84600s</delay>
+                    <filter>
+                        <evaltype>AND</evaltype>
+                        <conditions>
+                            <condition>
+                                <macro>{#CHANSTATUS}</macro>
+                                <value>(0|3)</value>
+                                <operator>NOT_MATCHES_REGEX</operator>
+                                <formulaid>A</formulaid>
+                            </condition>
+                            <condition>
+                                <macro>{#CHANSTATUS}</macro>
+                                <value>.*</value>
+                                <formulaid>B</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <lifetime>0d</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Channel $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.41933.1.3.2.1.3.{#SNMPINDEX}</snmp_oid>
+                            <key>chan.status[{#CHANNAME}]</key>
+                            <delay>120s</delay>
+                            <applications>
+                                <application>
+                                    <name>Discovery Channel</name>
+                                </application>
+                            </applications>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Channel Status</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>E1-ALIGERA-STATUS-CHANNEL</name>
+                            </valuemap>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}=0</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}=1</recovery_expression>
+                                    <name>Channel Status do {HOST.NAME}: BLOCKED</name>
+                                    <priority>DISASTER</priority>
+                                    <description>Channel Status (0 =BLOCKED, 1 =IDLE, 2 =BUSY, 3 =NA)</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Descoberta LLD Events</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#EVENTSDESCR},ALIGERA-MIB::e1Index]</snmp_oid>
+                    <key>e1Index.discovery</key>
+                    <delay>84600s</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>AIS Events E$1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ALIGERA-MIB::e1AISEvents.{#SNMPINDEX}</snmp_oid>
+                            <key>e1AISEvents[{#EVENTSDESCR}]</key>
+                            <delay>120s</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Discovery Events</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Alarms Status E$1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ALIGERA-MIB::e1Alarms.{#SNMPINDEX}</snmp_oid>
+                            <key>e1Alarms[{#EVENTSDESCR}]</key>
+                            <delay>120s</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Discovery Events</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>E1-ALIGERA-STATUS-ALARM</name>
+                            </valuemap>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}=2</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}=0</recovery_expression>
+                                    <name>E1 Alarms do {HOST.NAME}: AIS</name>
+                                    <priority>HIGH</priority>
+                                    <description>Recepção de indicação de alarme. O modem envia este alarme para o E1 quando perde o sinal remoto. O AG561 pode enviar esse sinal para o E1 quando o keepalive_host está fora do ar;</description>
+                                    <manual_close>YES</manual_close>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=3</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}=0</recovery_expression>
+                                    <name>E1 Alarms do {HOST.NAME}: BFAE</name>
+                                    <priority>AVERAGE</priority>
+                                    <description>Erro de alinhamento do quadro do E1. O sinal do E1 existe, mas o quadro está mal configurado;</description>
+                                    <manual_close>YES</manual_close>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=1</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}=0</recovery_expression>
+                                    <name>E1 Alarms do {HOST.NAME}: LoS</name>
+                                    <priority>DISASTER</priority>
+                                    <description>Sem sinal na recepção do E1</description>
+                                    <manual_close>YES</manual_close>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=4</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}=0</recovery_expression>
+                                    <name>E1 Alarms do {HOST.NAME}: MFAE</name>
+                                    <priority>AVERAGE</priority>
+                                    <description>Erro de alinhamento de multiquadro do E1. O equipamento está configurado para verificar CRC, mas o quadro E1 que está sendo recebido não tem CRC;</description>
+                                    <manual_close>YES</manual_close>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=5</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}=0</recovery_expression>
+                                    <name>E1 Alarms do {HOST.NAME}: RAI</name>
+                                    <priority>INFO</priority>
+                                    <description>Indicação de alarme remoto. O lado remoto está indicando algum alarme na recepção do E1, pode ser LoS, AIS, BFAE etc, no E1 remoto</description>
+                                    <manual_close>YES</manual_close>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Code Violations E$1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ALIGERA-MIB::e1CodeViolations.{#SNMPINDEX}</snmp_oid>
+                            <key>e1CodeViolations[{#EVENTSDESCR}]</key>
+                            <delay>120s</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <description>Code Violations: Erro de violação da codificação de linha. Geralmente é incrementada em virtude de problemas físicos, tais como cabos e/ou conectores;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Discovery Events</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Los Events E$1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ALIGERA-MIB::e1LOSEvents.{#SNMPINDEX}</snmp_oid>
+                            <key>e1LOSEvents[{#EVENTSDESCR}]</key>
+                            <delay>120s</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Discovery Events</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>RAI Events E$1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ALIGERA-MIB::e1RAIEvents.{#SNMPINDEX}</snmp_oid>
+                            <key>e1RAIEvents[{#EVENTSDESCR}]</key>
+                            <delay>120s</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Discovery Events</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Descoberta LLD Interfaces</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#IFDESCR},IF-MIB::ifDescr]</snmp_oid>
+                    <key>ifDescr.discovery</key>
+                    <delay>84600s</delay>
+                    <filter>
+                        <evaltype>AND</evaltype>
+                        <conditions>
+                            <condition>
+                                <macro>{#IFDESCR}</macro>
+                                <value>(lo|tunl0)</value>
+                                <operator>NOT_MATCHES_REGEX</operator>
+                                <formulaid>A</formulaid>
+                            </condition>
+                            <condition>
+                                <macro>{#IFDESCR}</macro>
+                                <value>.*</value>
+                                <formulaid>B</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <lifetime>15d</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Alias Interface $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>IF-MIB::ifAlias.{#SNMPINDEX}</snmp_oid>
+                            <key>ifAlias[{#IFDESCR}]</key>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <applications>
+                                <application>
+                                    <name>Discovery Interface</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Interface &quot;$1&quot; Inbound</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>IF-MIB::ifInOctets.{#SNMPINDEX}</snmp_oid>
+                            <key>ifInOctets[{#IFDESCR}]</key>
+                            <units>bps</units>
+                            <applications>
+                                <application>
+                                    <name>Discovery Interface</name>
+                                </application>
+                            </applications>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Transferencia</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>8</params>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Status Operacional $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>IF-MIB::ifOperStatus.{#SNMPINDEX}</snmp_oid>
+                            <key>ifOperStatus[{#IFDESCR}]</key>
+                            <applications>
+                                <application>
+                                    <name>Discovery Interface</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>E1-ALIGERA-STATUS-NETWROK</name>
+                            </valuemap>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Interface &quot;$1&quot; Outbound</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>IF-MIB::ifOutOctets.{#SNMPINDEX}</snmp_oid>
+                            <key>ifOutOctets[{#IFDESCR}]</key>
+                            <units>bps</units>
+                            <applications>
+                                <application>
+                                    <name>Discovery Interface</name>
+                                </application>
+                            </applications>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Transferencia</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>8</params>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+    <value_maps>
+        <value_map>
+            <name>E1-ALIGERA-STATUS-ALARM</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>OK</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>LOS</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>AIS</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>BFAE</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>MFAE</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>RAI</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>E1-ALIGERA-STATUS-CHANNEL</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>BLOCKED</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>IDLE</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>BUSY</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>N/A</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>E1-ALIGERA-STATUS-NETWROK</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>DOWN</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>UP</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>
