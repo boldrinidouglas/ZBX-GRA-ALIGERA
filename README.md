@@ -1,7 +1,8 @@
 # ZBX-GRA-ALIGERA
-Teamplate_Aligera_AG562_E1_ZABBIX-5 e Grafana Dashboard
-
 ### PT-BR ###
+Teamplate_Aligera_AG562_E1_ZABBIX-5 e Grafana Dashboard
+- Zabbix: https://github.com/boldrinidouglas/ZBX-GRA-ALIGERA/blob/main/TEMPLATE_TELEFONIA_AG562_E1_LLD_SNMP_ZBX-5.0.xml
+- Grafana: https://grafana.com/grafana/dashboards/15318
 
 ## HOMOLOGADO PARA: ##
 - Zabbix 5.0.15
