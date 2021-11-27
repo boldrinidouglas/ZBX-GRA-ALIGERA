@@ -23,3 +23,4 @@ No Grafana..
 - Certifique-se de ter o Plugin: alexanderzobnin-zabbix-app - https://grafana.com/grafana/plugins/alexanderzobnin-zabbix-app instalado e configurado. Para ao importar o Modelo para Grafana, podermos selecionar a Fonte de Dados que é o Zabbix.
 
 
+[logo]: https://github.com/boldrinidouglas/ZBX-GRA-ALIGERA/blob/main/GRAFANA-E1-ZABBIX-DASH.png?raw=true "Grafana"
