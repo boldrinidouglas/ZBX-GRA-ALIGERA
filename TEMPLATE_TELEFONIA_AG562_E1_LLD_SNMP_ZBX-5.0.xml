@@ -243,7 +243,7 @@ Link: https://aligera.com.br/gateway-ag561/</description>
                                     <expression>{last()}=2</expression>
                                     <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
                                     <recovery_expression>{last()}=0</recovery_expression>
-                                    <name>E1 Alarms do {HOST.NAME}: AIS</name>
+                                    <name>E1({#EVENTSDESCR}) Alarms do {HOST.NAME}: AIS</name>
                                     <priority>HIGH</priority>
                                     <description>Recepção de indicação de alarme. O modem envia este alarme para o E1 quando perde o sinal remoto. O AG561 pode enviar esse sinal para o E1 quando o keepalive_host está fora do ar;</description>
                                     <manual_close>YES</manual_close>
@@ -252,7 +252,7 @@ Link: https://aligera.com.br/gateway-ag561/</description>
                                     <expression>{last()}=3</expression>
                                     <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
                                     <recovery_expression>{last()}=0</recovery_expression>
-                                    <name>E1 Alarms do {HOST.NAME}: BFAE</name>
+                                    <name>E1({#EVENTSDESCR}) Alarms do {HOST.NAME}: BFAE</name>
                                     <priority>AVERAGE</priority>
                                     <description>Erro de alinhamento do quadro do E1. O sinal do E1 existe, mas o quadro está mal configurado;</description>
                                     <manual_close>YES</manual_close>
@@ -261,7 +261,7 @@ Link: https://aligera.com.br/gateway-ag561/</description>
                                     <expression>{last()}=1</expression>
                                     <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
                                     <recovery_expression>{last()}=0</recovery_expression>
-                                    <name>E1 Alarms do {HOST.NAME}: LoS</name>
+                                    <name>E1({#EVENTSDESCR}) Alarms do {HOST.NAME}: LoS</name>
                                     <priority>DISASTER</priority>
                                     <description>Sem sinal na recepção do E1</description>
                                     <manual_close>YES</manual_close>
@@ -270,7 +270,7 @@ Link: https://aligera.com.br/gateway-ag561/</description>
                                     <expression>{last()}=4</expression>
                                     <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
                                     <recovery_expression>{last()}=0</recovery_expression>
-                                    <name>E1 Alarms do {HOST.NAME}: MFAE</name>
+                                    <name>E1({#EVENTSDESCR}) Alarms do {HOST.NAME}: MFAE</name>
                                     <priority>AVERAGE</priority>
                                     <description>Erro de alinhamento de multiquadro do E1. O equipamento está configurado para verificar CRC, mas o quadro E1 que está sendo recebido não tem CRC;</description>
                                     <manual_close>YES</manual_close>
@@ -279,7 +279,7 @@ Link: https://aligera.com.br/gateway-ag561/</description>
                                     <expression>{last()}=5</expression>
                                     <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
                                     <recovery_expression>{last()}=0</recovery_expression>
-                                    <name>E1 Alarms do {HOST.NAME}: RAI</name>
+                                    <name>E1({#EVENTSDESCR}) Alarms do {HOST.NAME}: RAI</name>
                                     <priority>INFO</priority>
                                     <description>Indicação de alarme remoto. O lado remoto está indicando algum alarme na recepção do E1, pode ser LoS, AIS, BFAE etc, no E1 remoto</description>
                                     <manual_close>YES</manual_close>
